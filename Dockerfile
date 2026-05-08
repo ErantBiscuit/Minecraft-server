@@ -2,8 +2,7 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN curl -L -o paper-server.jar \
-    https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar && \
-    java -jar BuildTools.jar --rev 1.20.5
+    https://api.purpurmc.org/v2/purpur/1.20.5/latest/download
 COPY server.properties .
 COPY start.sh .
 COPY eula.txt .
