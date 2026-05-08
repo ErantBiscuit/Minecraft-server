@@ -11,4 +11,3 @@ EXPOSE 25565
 EXPOSE 19132/udp
 EXPOSE 19133/udp
 CMD ["./start.sh"]
-Limpiar Dockerfile - usar Purpur
