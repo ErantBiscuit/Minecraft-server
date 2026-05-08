@@ -1,4 +1,4 @@
-FROM openjdk:17-slim
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN curl -o paper-server.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/517/downloads/paper-1.20.4-517.jar
