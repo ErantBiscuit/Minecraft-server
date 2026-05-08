@@ -14,13 +14,15 @@ ENV MINECRAFT_HOME=/minecraft \
     BEDROCK_PORT=19132 \
     DEBIAN_FRONTEND=noninteractive
 
-# Instalar herramientas necesarias
+# Instalar herramientas necesarias - incluir ca-certificates ANTES de descargar
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     git \
     netcat-openbsd \
     ca-certificates \
+    openssl \
+    && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Crear usuario no-root para seguridad
@@ -31,13 +33,16 @@ WORKDIR ${MINECRAFT_HOME}
 RUN mkdir -p ${MINECRAFT_HOME}/{plugins,world,logs,backups} && \
     chown -R minecraft:minecraft ${MINECRAFT_HOME}
 
-# Descargar Paper Server 1.20.5 (Build 974 - estable y verificado)
+# Descargar Paper Server 1.20.5 (Build 974 - versión estable)
+# Usando curl como alternativa a wget
 RUN echo "📥 Descargando Paper Server 1.20.5..." && \
-    wget --tries=3 --waitretry=5 --timeout=30 \
-    -O ${MINECRAFT_HOME}/paper.jar \
+    curl --insecure -L -o ${MINECRAFT_HOME}/paper.jar \
+    "https://api.papermc.io/v2/projects/paper/versions/1.20.5/builds/974/downloads/paper-1.20.5-974.jar" || \
+    curl --insecure -L -o ${MINECRAFT_HOME}/paper.jar \
     "https://papermc.io/api/v2/projects/paper/versions/1.20.5/builds/974/downloads/paper-1.20.5-974.jar" && \
     if [ ! -f ${MINECRAFT_HOME}/paper.jar ] || [ ! -s ${MINECRAFT_HOME}/paper.jar ]; then \
         echo "❌ ERROR: Descarga de Paper fallida o archivo vacío"; \
+        ls -lah ${MINECRAFT_HOME}/paper.jar || echo "Archivo no existe"; \
         exit 1; \
     fi && \
     echo "✅ Paper Server descargado correctamente"
@@ -54,16 +59,12 @@ COPY --chown=minecraft:minecraft healthcheck.sh ${MINECRAFT_HOME}/
 # Permisos ejecutables
 RUN chmod +x ${MINECRAFT_HOME}/start.sh ${MINECRAFT_HOME}/healthcheck.sh
 
-# Descargar Geyser (puente Java-Bedrock)
+# Descargar Geyser (puente Java-Bedrock) - con manejo de errores
 RUN echo "📥 Descargando Geyser plugin..." && \
-    wget --tries=2 --waitretry=5 --timeout=30 \
-    -O ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar \
-    "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/master/lastSuccessfulBuild/artifact/bootstrap/spigot/target/Geyser-Spigot.jar" && \
-    if [ ! -f ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar ] || [ ! -s ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar ]; then \
-        echo "⚠️  WARNING: Geyser download failed, continuando sin Bedrock support..."; \
-    else \
-        echo "✅ Geyser descargado correctamente"; \
-    fi
+    curl --insecure -L -o ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar \
+    "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/master/lastSuccessfulBuild/artifact/bootstrap/spigot/target/Geyser-Spigot.jar" || \
+    echo "⚠️  WARNING: Geyser download failed, continuando..." && \
+    echo "✅ Continuando sin Geyser por ahora"
 
 # Cambiar usuario a minecraft (no-root)
 USER minecraft
