@@ -1,31 +1,42 @@
 #!/bin/bash
-echo "=========================================="
-echo "🎮 Iniciando servidor Minecraft..."
-echo "=========================================="
-echo "eula=true" > eula.txt
-echo "✅ EULA aceptado"
-if [ ! -d "plugins" ]; then
-    echo "📁 Creando carpeta plugins..."
-    mkdir -p plugins
+
+set -e
+
+MINECRAFT_HOME="${MINECRAFT_HOME:=/minecraft}"
+JAVA_OPTS="${JAVA_OPTS:--Xms512M -Xmx1024M -XX:+UseG1GC -XX:MaxGCPauseMillis=200}"
+JAR_FILE="${MINECRAFT_HOME}/paper.jar"
+LOG_FILE="${MINECRAFT_HOME}/logs/latest.log"
+
+mkdir -p "${MINECRAFT_HOME}/logs"
+
+echo "========================================"
+echo "🎮 Iniciando Minecraft Server"
+echo "========================================"
+echo "📍 Directorio: ${MINECRAFT_HOME}"
+echo "☕ Java Options: ${JAVA_OPTS}"
+echo "📦 JAR File: ${JAR_FILE}"
+echo "🔌 Puerto Java (TCP): 25565"
+echo "🎮 Puerto Bedrock (UDP): 19132"
+echo "========================================"
+echo ""
+
+if [ ! -f "${JAR_FILE}" ]; then
+    echo "❌ ERROR: ${JAR_FILE} no encontrado"
+    exit 1
 fi
-echo "⏳ Buscando Geyser..."
-GEYSER_JAR="plugins/Geyser-Spigot.jar"
-if [ ! -f "$GEYSER_JAR" ]; then
-    echo "📥 Descargando Geyser-Spigot..."
-    curl -o "$GEYSER_JAR" https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/Spigot
-    if [ -f "$GEYSER_JAR" ]; then
-        echo "✅ Geyser descargado"
-    else
-        echo "❌ Error descargando Geyser"
-    fi
-else
-    echo "✅ Geyser ya existe"
+
+if [ ! -r "${JAR_FILE}" ]; then
+    echo "❌ ERROR: No se tienen permisos para ${JAR_FILE}"
+    exit 1
 fi
-echo "=========================================="
+
+if [ ! -f "${MINECRAFT_HOME}/eula.txt" ]; then
+    echo "📝 Creando eula.txt..."
+    echo "eula=true" > "${MINECRAFT_HOME}/eula.txt"
+fi
+
+echo "✅ Validaciones completadas"
 echo "🚀 Iniciando servidor..."
 echo ""
-java -Xmx512M -Xms256M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -jar paper-server.jar nogui
-echo ""
-echo "=========================================="
-echo "🛑 Servidor detenido"
-echo "=========================================="
+
+exec java ${JAVA_OPTS} -jar "${JAR_FILE}" nogui
