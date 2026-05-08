@@ -4,127 +4,69 @@
 FROM eclipse-temurin:17-jre-jammy
 
 # Metadata
-LABEL maintainer="Minecraft Server"
-LABEL description="Minecraft Server with Paper 1.20.5 + Geyser for Bedrock support"
+LABEL maintainer="ErantBiscuit"
+LABEL description="Minecraft Server with Paper 1.20.5 + Geyser for Bedrock support on ARM64"
 
 # Variables de entorno
-ENV JAVA_OPTS="-Xms512M -Xmx1024M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:G1NewCollectionHouseofferPercent=30 -XX:G1ReservePercent=20"
-ENV SERVER_PORT=25565
-ENV BEDROCK_PORT=19132
+ENV MINECRAFT_HOME=/minecraft \
+    JAVA_OPTS="-Xms512M -Xmx1024M -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:G1NewCollectionHeuristicPercent=30 -XX:G1ReservePercent=20 -XX:G1HeapRegionSize=32M" \
+    SERVER_PORT=25565 \
+    BEDROCK_PORT=19132 \
+    DEBIAN_FRONTEND=noninteractive
 
 # Instalar herramientas necesarias
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     git \
-    unzip \
+    netcat-openbsd \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Crear directorio de trabajo
-WORKDIR /minecraft
+# Crear usuario no-root para seguridad
+RUN useradd -m -u 1000 minecraft
 
-# Descargar Paper Server 1.20.5
-# Paper proporciona links estables a través de su API
-RUN mkdir -p /minecraft && \
-    echo "Descargando Paper Server 1.20.5..." && \
-    wget -q --show-progress -O /minecraft/paper.jar \
-    "https://api.papermc.io/v2/projects/paper/versions/1.20.5/builds/974/downloads/paper-1.20.5-974.jar" && \
-    if [ ! -f /minecraft/paper.jar ] || [ ! -s /minecraft/paper.jar ]; then \
-        echo "ERROR: Descarga de Paper fallida o archivo vacío"; \
+# Crear directorio de trabajo y estructura
+WORKDIR ${MINECRAFT_HOME}
+RUN mkdir -p ${MINECRAFT_HOME}/{plugins,world,logs,backups} && \
+    chown -R minecraft:minecraft ${MINECRAFT_HOME}
+
+# Descargar Paper Server 1.20.5 (Build 974 - estable y verificado)
+RUN echo "📥 Descargando Paper Server 1.20.5..." && \
+    wget --tries=3 --waitretry=5 --timeout=30 \
+    -O ${MINECRAFT_HOME}/paper.jar \
+    "https://papermc.io/api/v2/projects/paper/versions/1.20.5/builds/974/downloads/paper-1.20.5-974.jar" && \
+    if [ ! -f ${MINECRAFT_HOME}/paper.jar ] || [ ! -s ${MINECRAFT_HOME}/paper.jar ]; then \
+        echo "❌ ERROR: Descarga de Paper fallida o archivo vacío"; \
         exit 1; \
     fi && \
-    echo "Paper Server descargado correctamente"
+    echo "✅ Paper Server descargado correctamente"
 
 # Aceptar EULA
-RUN echo "eula=true" > /minecraft/eula.txt
+RUN echo "eula=true" > ${MINECRAFT_HOME}/eula.txt
 
-# Crear estructura de directorios
-RUN mkdir -p /minecraft/{plugins,world,logs,config}
+# Copiar archivos de configuración
+COPY --chown=minecraft:minecraft eula.txt ${MINECRAFT_HOME}/
+COPY --chown=minecraft:minecraft server.properties ${MINECRAFT_HOME}/
+COPY --chown=minecraft:minecraft start.sh ${MINECRAFT_HOME}/
+COPY --chown=minecraft:minecraft healthcheck.sh ${MINECRAFT_HOME}/
 
-# Crear archivo server.properties optimizado
-RUN cat > /minecraft/server.properties << 'EOF'
-#Minecraft server properties
-#Servidor optimizado para Render.com
-server-port=25565
-server-ip=0.0.0.0
-max-players=20
-level-name=world
-level-seed=
-gamemode=survival
-difficulty=normal
-pvp=true
-enable-command-blocks=false
-spawn-protection=16
-view-distance=10
-simulation-distance=10
-max-world-size=29999984
-online-mode=true
-enable-rcon=false
-rcon.port=25575
-motd=\u00a74\u00a7lMinecraft Server\u00a7r - \u00a72Java + Bedrock Edition
-allow-flight=false
-enable-query=false
-query.port=25565
-allow-nether=true
-allow-end=true
-enable-whitelist=false
-broadcast-console-to-ops=true
-sync-chunk-writes=true
-enable-jmx-monitoring=false
-text-filtering-config=
-spawn-animals=true
-spawn-monsters=true
-spawn-npcs=true
-use-native-transport=true
-prevent-proxy-connections=false
-enforce-secure-profile=false
-network-compression-threshold=256
-EOF
+# Permisos ejecutables
+RUN chmod +x ${MINECRAFT_HOME}/start.sh ${MINECRAFT_HOME}/healthcheck.sh
 
 # Descargar Geyser (puente Java-Bedrock)
-RUN echo "Descargando Geyser plugin..." && \
-    wget -q --show-progress -O /minecraft/plugins/Geyser-Spigot.jar \
+RUN echo "📥 Descargando Geyser plugin..." && \
+    wget --tries=2 --waitretry=5 --timeout=30 \
+    -O ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar \
     "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/master/lastSuccessfulBuild/artifact/bootstrap/spigot/target/Geyser-Spigot.jar" && \
-    if [ ! -f /minecraft/plugins/Geyser-Spigot.jar ] || [ ! -s /minecraft/plugins/Geyser-Spigot.jar ]; then \
-        echo "ADVERTENCIA: Descarga de Geyser podría haber fallado, intentando alternativa..."; \
+    if [ ! -f ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar ] || [ ! -s ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar ]; then \
+        echo "⚠️  WARNING: Geyser download failed, continuando sin Bedrock support..."; \
+    else \
+        echo "✅ Geyser descargado correctamente"; \
     fi
 
-# Crear script de inicio
-RUN cat > /minecraft/start.sh << 'EOF'
-#!/bin/bash
-
-# Script de inicio para Minecraft Server
-# Optimizado para Render.com
-
-set -e
-
-JAVA_OPTS="${JAVA_OPTS:--Xms512M -Xmx1024M}"
-JAR_FILE="paper.jar"
-
-# Verificar que el JAR existe
-if [ ! -f "$JAR_FILE" ]; then
-    echo "ERROR: $JAR_FILE no encontrado"
-    exit 1
-fi
-
-# Mostrar información del servidor
-echo "========================================"
-echo "Iniciando Minecraft Server"
-echo "========================================"
-echo "Java Options: $JAVA_OPTS"
-echo "JAR File: $JAR_FILE"
-echo "Puerto Java (TCP): 25565"
-echo "Puerto Bedrock (UDP): 19132"
-echo "========================================"
-echo ""
-
-# Iniciar el servidor
-exec java $JAVA_OPTS -jar "$JAR_FILE" nogui
-
-EOF
-
-RUN chmod +x /minecraft/start.sh
+# Cambiar usuario a minecraft (no-root)
+USER minecraft
 
 # Exponer puertos
 # Puerto 25565 (TCP): Java Edition
@@ -136,12 +78,12 @@ EXPOSE 25565/tcp
 EXPOSE 19132/udp
 EXPOSE 19133/udp
 
-# Healthcheck (opcional, verifica que el servidor está respondiendo)
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:25565 || exit 1 || true
+    CMD bash ${MINECRAFT_HOME}/healthcheck.sh || exit 1
 
 # Volumen para persistencia de datos
-VOLUME ["/minecraft"]
+VOLUME ["${MINECRAFT_HOME}"]
 
-# Comando por defecto
-CMD ["/minecraft/start.sh"]
+# Comando de inicio
+ENTRYPOINT ["bash", "${MINECRAFT_HOME}/start.sh"]
