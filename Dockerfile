@@ -21,8 +21,9 @@ RUN mkdir -p ${MINECRAFT_HOME}/{plugins,world,logs,backups} && \
 
 # Descargar Paper Server 1.20.5 desde CDN oficial
 RUN echo "📥 Descargando Paper Server 1.20.5..." && \
-    curl -L --connect-timeout 30 --max-time 300 \
-    -o ${MINECRAFT_HOME}/paper.jar \
+  curl -L --connect-timeout 30 --max-time 300 \
+-o ${MINECRAFT_HOME}/paper.jar \
+"https://launcher.mojang.com/v1/objects/e00c4ff3d13056381186c27c46edbe12fd7599e8/server.jar" && \
     "https://cdn.papermc.io/downloads/paper/1.20.5/paper-1.20.5-974.jar" && \
     echo "✅ Paper descargado"
 
