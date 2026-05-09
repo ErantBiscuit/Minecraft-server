@@ -9,7 +9,7 @@ WORKDIR ${MINECRAFT_HOME}
 RUN mkdir -p ${MINECRAFT_HOME}/{plugins,world,logs} && chown -R minecraft:minecraft ${MINECRAFT_HOME}
 
 # Descargar server.jar pre-compilado y verificado
-RUN curl -L -o ${MINECRAFT_HOME}/server.jar https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed3296b6ab7/server.jar
+RUN curl -L -o ${MINECRAFT_HOME}/server.jar https://getbukkit.org/get/QRmEAkJCu1HcZkgxVSmVgHZYwZ03Ua1R.jar
 
 RUN echo "eula=true" > ${MINECRAFT_HOME}/eula.txt
 
