@@ -8,8 +8,8 @@ RUN useradd -m -u 1000 minecraft
 WORKDIR ${MINECRAFT_HOME}
 RUN mkdir -p ${MINECRAFT_HOME}/{plugins,world,logs} && chown -R minecraft:minecraft ${MINECRAFT_HOME}
 
-# Descargar server.jar pre-compilado y verificado
-RUN curl -L -o ${MINECRAFT_HOME}/server.jar https://download.getbukkit.org/spigot/spigot-1.20.5.jar
+# Descargar Vanilla Server directamente de Mojang (más confiable)
+RUN curl -L -o ${MINECRAFT_HOME}/server.jar https://launcher.mojang.com/v1/objects/a412fd69db1f81db3f511c1f6b7f53cf4b928ebb/server.jar
 
 RUN echo "eula=true" > ${MINECRAFT_HOME}/eula.txt
 
