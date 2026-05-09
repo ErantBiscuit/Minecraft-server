@@ -4,7 +4,7 @@ set -e
 
 MINECRAFT_HOME="${MINECRAFT_HOME:=/minecraft}"
 JAVA_OPTS="${JAVA_OPTS:--Xms512M -Xmx1024M -XX:+UseG1GC -XX:MaxGCPauseMillis=200}"
-JAR_FILE="${MINECRAFT_HOME}/paper.jar"
+JAR_FILE="${MINECRAFT_HOME}/server.jar"
 LOG_FILE="${MINECRAFT_HOME}/logs/latest.log"
 
 mkdir -p "${MINECRAFT_HOME}/logs"
