@@ -24,8 +24,6 @@ COPY server.properties start.sh ./
 
 RUN chmod +x start.sh
 
-USER minecraft
-
 EXPOSE 25565/tcp
 EXPOSE 19132/udp
 EXPOSE 19133/udp
