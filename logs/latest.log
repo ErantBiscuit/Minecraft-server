@@ -1,0 +1,73 @@
+[16:51:57] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[16:51:58] [ServerMain/INFO]: Found new data pack file/bukkit, loading it automatically
+[16:51:59] [ServerMain/INFO]: No existing world data, creating new world
+[16:52:00] [ServerMain/INFO]: Loaded 1174 recipes
+[16:52:01] [ServerMain/INFO]: Loaded 1271 advancements
+[16:52:01] [Server thread/INFO]: Starting minecraft server version 1.20.4
+[16:52:01] [Server thread/INFO]: Loading properties
+[16:52:01] [Server thread/INFO]: This server is running Paper version git-Paper-496 (MC: 1.20.4) (Implementing API version 1.20.4-R0.1-SNAPSHOT) (Git: 7ac24a1 on ver/1.20.4)
+[16:52:03] [Server thread/INFO]: Using 4 threads for Netty based IO
+[16:52:03] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[16:52:03] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using 1 I/O threads, 4 worker threads, and gen parallelism of 4 threads
+[16:52:03] [Server thread/WARN]: [!] The timings profiler has been enabled but has been scheduled for removal from Paper in the future.
+    We recommend installing the spark profiler as a replacement: https://spark.lucko.me/
+    For more information please visit: https://github.com/PaperMC/Paper/issues/8948
+[16:52:03] [Server thread/INFO]: Default game type: SURVIVAL
+[16:52:03] [Server thread/INFO]: Generating keypair
+[16:52:03] [Server thread/INFO]: Starting Minecraft server on *:25565
+[16:52:04] [Server thread/INFO]: Using default channel type
+[16:52:04] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[16:52:04] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[16:52:04] [Server thread/INFO]: Preparing level "world"
+[16:52:15] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[16:52:15] [Server thread/INFO]: Time elapsed: 122 ms
+[16:52:15] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[16:52:15] [Server thread/INFO]: Time elapsed: 80 ms
+[16:52:15] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[16:52:15] [Server thread/INFO]: Time elapsed: 70 ms
+[16:52:15] [Server thread/INFO]: Running delayed init tasks
+[16:52:15] [Server thread/INFO]: Done (14.110s)! For help, type "help"
+[16:52:15] [Server thread/INFO]: *************************************************************************************
+[16:52:15] [Server thread/INFO]: This is the first time you're starting this server.
+[16:52:15] [Server thread/INFO]: It's recommended you read our 'Getting Started' documentation for guidance.
+[16:52:15] [Server thread/INFO]: View this and more helpful information here: https://docs.papermc.io/paper/next-steps
+[16:52:15] [Server thread/INFO]: *************************************************************************************
+[16:52:15] [Server thread/INFO]: Timings Reset
+[17:01:40] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 15419ms or 308 ticks behind
+[18:05:53] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 3837280ms or 76745 ticks behind
+[18:13:41] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 5003ms or 100 ticks behind
+[18:26:58] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 781784ms or 15635 ticks behind
+[18:38:49] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 695744ms or 13914 ticks behind
+[18:39:52] [User Authenticator #0/INFO]: UUID of player ErantBiscuit is e74fc6e5-5a83-4210-8e6d-d37a1a3faafd
+[18:39:55] [Server thread/INFO]: ErantBiscuit joined the game
+[18:39:55] [Server thread/INFO]: ErantBiscuit[/127.0.0.1:56435] logged in with entity id 421 at ([world]-9.5, 95.0, 0.5)
+[18:39:58] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 2530ms or 50 ticks behind
+[18:40:41] [Server thread/INFO]: ErantBiscuit lost connection: Disconnected
+[18:40:42] [Server thread/INFO]: ErantBiscuit left the game
+[18:41:21] [Server thread/INFO]: Made ErantBiscuit a server operator
+[18:41:37] [Server thread/INFO]: Stopping the server
+[18:41:37] [Server thread/INFO]: Stopping server
+[18:41:37] [Server thread/INFO]: Saving players
+[18:41:37] [Server thread/INFO]: Saving worlds
+[18:41:37] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[18:41:37] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world'
+[18:41:37] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world'
+[18:41:37] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world'
+[18:41:38] [Server thread/INFO]: [ChunkHolderManager] Saved 1662 block chunks, 134 entity chunks, 2 poi chunks in world 'world' in 1.05s
+[18:41:38] [Server thread/INFO]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[18:41:38] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_nether]'/minecraft:the_nether
+[18:41:38] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_nether'
+[18:41:38] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_nether'
+[18:41:38] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_nether'
+[18:41:39] [Server thread/INFO]: [ChunkHolderManager] Saved 1496 block chunks, 23 entity chunks, 0 poi chunks in world 'world_nether' in 0.55s
+[18:41:39] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[18:41:39] [Server thread/INFO]: Saving chunks for level 'ServerLevel[world_the_end]'/minecraft:the_end
+[18:41:39] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'world_the_end'
+[18:41:39] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'world_the_end'
+[18:41:39] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'world_the_end'
+[18:41:39] [Server thread/INFO]: [ChunkHolderManager] Saved 1496 block chunks, 10 entity chunks, 0 poi chunks in world 'world_the_end' in 0.41s
+[18:41:39] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[18:41:39] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[18:41:39] [Server thread/INFO]: Flushing Chunk IO
+[18:41:39] [Server thread/INFO]: Closing Thread Pool
+[18:41:39] [Server thread/INFO]: Closing Server
