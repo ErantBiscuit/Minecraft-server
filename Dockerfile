@@ -7,8 +7,6 @@ RUN apt-get update && \
     apt-get install -y curl jq bash && \
     rm -rf /var/lib/apt/lists/*
 
-RUN useradd -m minecraft
-
 WORKDIR ${MINECRAFT_HOME}
 
 RUN mkdir -p plugins world logs
