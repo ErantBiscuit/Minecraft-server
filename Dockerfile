@@ -1,25 +1,35 @@
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre
 
-ENV MINECRAFT_HOME=/minecraft JAVA_OPTS="-Xms512M -Xmx1024M -XX:+UseG1GC"
+ENV MINECRAFT_HOME=/minecraft
+ENV JAVA_OPTS="-Xms1G -Xmx1G -XX:+UseG1GC"
 
-RUN apt-get update && apt-get install -y curl bash && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y curl jq bash && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN useradd -m -u 1000 minecraft
 
 WORKDIR ${MINECRAFT_HOME}
-RUN mkdir -p ${MINECRAFT_HOME}/{plugins,world,logs} && chown -R minecraft:minecraft ${MINECRAFT_HOME}
 
-# Descargar Vanilla Server directamente de Mojang (más confiable)
-RUN curl -fsSL -o ${MINECRAFT_HOME}/server.jar \
-https://piston-data.mojang.com/v1/objects/a412fd69db1f81db3f511c1f6b7f53cf4b928ebb/server.jar
+RUN mkdir -p plugins world logs
 
-RUN echo "eula=true" > ${MINECRAFT_HOME}/eula.txt
+# Descargar última build estable de Paper automáticamente
+RUN PAPER_VERSION=$(curl -s https://api.papermc.io/v2/projects/paper | jq -r '.versions[-1]') && \
+    BUILD=$(curl -s https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION} | jq '.builds[-1]') && \
+    JAR_NAME="paper-${PAPER_VERSION}-${BUILD}.jar" && \
+    curl -fsSL -o server.jar \
+    "https://api.papermc.io/v2/projects/paper/versions/${PAPER_VERSION}/builds/${BUILD}/downloads/${JAR_NAME}"
 
-COPY eula.txt server.properties start.sh healthcheck.sh ${MINECRAFT_HOME}/
-RUN chmod +x ${MINECRAFT_HOME}/start.sh ${MINECRAFT_HOME}/healthcheck.sh
+RUN echo "eula=true" > eula.txt
 
-RUN mkdir -p ${MINECRAFT_HOME}/plugins && curl -L -o ${MINECRAFT_HOME}/plugins/Geyser-Spigot.jar https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/master/lastSuccessfulBuild/artifact/bootstrap/spigot/target/Geyser-Spigot.jar 2>/dev/null || true
+COPY server.properties start.sh ./
+
+RUN chmod +x start.sh
 
 USER minecraft
-EXPOSE 25565/tcp 19132/udp 19133/udp
-VOLUME ["${MINECRAFT_HOME}"]
+
+EXPOSE 25565/tcp
+EXPOSE 19132/udp
+EXPOSE 19133/udp
+
 CMD ["bash", "/minecraft/start.sh"]
